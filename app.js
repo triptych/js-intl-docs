@@ -68,5 +68,7 @@ router.route('/quickstart/browser/')
     .get(routes.render('quickstart/browser'));
 router.route('/quickstart/node/')
     .get(routes.render('quickstart/node'));
+router.route('/javascript/')
+    .get(routes.render('javascript'));
 
 router.route('/handlebars/').get(routes.handlebars);

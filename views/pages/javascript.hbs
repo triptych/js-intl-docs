@@ -1,0 +1,32 @@
+{{setTitle "Using intl-messagformat" for Internationalization}}
+
+<h1>Using intl-messageformat for Internationalization</h1>
+
+<h2>Introduction</h2>
+
+As you have seen in the <a href="/quickstart/browser/">browser quickstart</a>, it is much easier now to do Internationalization in the browser. In this section we explore the formatting of messages as defined within <a href="">{{intl-messageformat}}</a> which seeks to conform to the <a href="http://userguide.icu-project.org/formatparse/messages">ICU message specification</a>.
+We will show examples of progressively more complex message parsing options, and explain how they work. Be sure to check out the <a href="/quickstart/browser/">browser quickstart</a> to see how to include {{code "intl-messageformat"}} on your page.
+
+
+<h2>Basic Examples</h2>
+
+All messages have the same basic structure:
+
+{{#code "js"}}
+    var msg = new IntlMessageFormat(pattern, locale, [optFieldFormatters]);
+{{/code}}
+
+<p>
+A simple example using tokens.
+</p>
+
+{{#code "js"}}
+
+var msg = new IntlMessageFormat("Welcome to {CITY}, {STATE}!", "en-US");
+msg.format({CITY: "Redwood City", STATE: "California"});
+
+{{/code}}
+
+
+
+
