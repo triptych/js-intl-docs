@@ -7,41 +7,12 @@
     The IntlMessageFormat API aims to provide a standardized way to concatenate strings with localization support in JavaScript on both the server and client. It allows you to format a string with placeholders, including plural and select support to create localized messages.
 </p>
 
-{{sectionHeading "Basis"}}
-<p>
-    This implementation is based on the <a href="http://wiki.ecmascript.org/doku.php?id=globalization:messageformatting">Strawman Draft</a>. There are a few places this implementation diverges from the strawman draft. One such place is the pattern after it has been parsed. The strawman draft indicates the parsed arguments should be "flat" - where grouping options are at the same level as the {{code "type"}} and {{code "valueName"}}. This, as an example, would look like:
-</p>
-
-{{#code "js"}}
-{
-    type: "plural",
-    valueName: "TRAVELER_COUNT",
-    zero: "No travelers",
-    one: "One traveler",
-    two: "Two travelers",
-    few: "There are a few travelers",
-    many: "There are many travelers",
-    other: "There are a lot of travelers"
-}
-{{/code}}
-<p>
-    This implementation takes a readability approach and places grouping options in an {{code "options"}} key. This looks like:
-</p>
-
-{{#code "js"}}
-{
-    type: "plural",
-    valueName: "TRAVELER_COUNT",
-    options: {
-        zero: "No travelers",
-        one: "One traveler",
-        two: "Two travelers",
-        few: "There are a few travelers",
-        many: "There are many travelers",
-        other: "There are a lot of travelers"
-    }
-}
-{{/code}}
+<aside>
+    <p>
+        The {{code "intl-messageformat"}} module can be used by itself, but it is mainly intended to be used within the 3 helpers we have provided. You should start your development using either the <a href="/handlebars">Handlebars</a>, <a href="/dust">Dust</a>, or <a href="/react">React</a> helpers
+        if you are using those in your project.
+    </p>
+</aside>
 
 {{sectionHeading "How It Works"}}
 
@@ -51,31 +22,6 @@
 var msg = new IntlMessageFormat(pattern, locale, [optFieldFormatters]);
 {{/code}}
 
-<p>If a {{code "String"}} is provided, it is parsed into a workable {{code "Array"}} of tokens. This means:</p>
-
-{{#code "js"}}
-"Welcome to {CITY}, {STATE}!"
-{{/code}}
-
-<p>becomes:</p>
-
-{{#code "js"}}
-[
-    "Welcome to ",
-    {
-        valueName: "CITY"
-    },
-    ", "
-    {
-        valueName: "STATE"
-    },
-    "!"
-]
-{{/code}}
-
-<p>
-    The pattern {{code "Array"}} may contain {{code "Strings"}} or {{code "Objects"}}. Read more about [Token Objects](#token-objects).
-</p>
 
 <p>
     The pattern is stored internally until the {{code "format()"}} method is called with an {{code "Object"}} containing parameters for generating the message. The pattern is then processed by converting the tokens into strings based on the parameters provided and concatenating the values together.
@@ -121,8 +67,8 @@ npm install intl-messageformat
 </p>
 
 <dl class="parameters-list">
-    <dt>{{code "pattern: String|Array"}}</dt>
-    <dd>Array or string that serves as formatting pattern. Use array for plural and select messages, otherwise use string form.</dd>
+    <dt>{{code "pattern: String"}}</dt>
+    <dd>String that serves as formatting pattern.</dd>
 
     <dt>{{code "locale: String"}}</dt>
     <dd>Locale for string formatting. The locale is optional, but it is highly encouraged to provide a locale. If you do not provide a locale, the default locale will be used.</dd>
@@ -186,9 +132,9 @@ var myNameIs = msg.format({ NAME: "Ferris Wheeler"});
 
 <dl class="parameters-list">
 
-    <dt>{{code "pattern: Array|String"}}</dt>
+    <dt>{{code "pattern: String"}}</dt>
     <dd>
-        {{code "Array"}} or {{code "String"}} that serves as formatting pattern. An {{code "Array"}} may consist of {{code "Strings"}} and [Token Objects](#token-objects).
+        {{code "String"}} that serves as formatting pattern.
     </dd>
 
     <dt>{{code "locale: String"}}</dt>
@@ -218,57 +164,6 @@ var myNameIs = msg.format({ NAME: "Ferris Wheeler"});
 </dl>
 
 
-<h3>Token Objects</h3>
-<p>
-
-    Token objects are created when the string is parsed. If you wish, you can create your own token objects. Token objects should always at least contain a {{code "valueName"}}. There are a few other items that can be included:
-</p>
-
-<dl class="parameters-list">
-    <dt>{{code "type: String"}}</dt>
-    <dd>{{code "plural"}} or {{code "select"}} to identify the grouping type. Other values such as {{code "number"}} and {{code "date"}} are used to identify the type of the value and can be combined with a {{code "format"}} string to identify a formatter to be used.</dd>
-
-    <dt>{{code "valueName: String"}}</dt>
-    <dd>key to match the {{code "format"}} object</dd>
-
-    <dt>{{code "format: String|Function"}}</dt>
-    <dd>formatter used on the value after is discovered. Specifying the {{code "type"}} is {{code "'number'"}} and the {{code "format"}} is {{code "'integer'"}} would result in the default formatter {{code "number_integer"}} being called</dd>
-
-    <dt>{{code "options: Object"}}</dt>
-    <dd>each key should be matched based on the {{code "type"}} specified</dd>
-
-    <dt>{{code "zero: String|Array"}}</dt>
-    <dd>(plural) Matched when the locale determines that the number is in the {{code "'zero'"}} pluralization class</dd>
-
-    <dt>{{code "one: String|Array"}}</dt>
-    <dd>(plural) Matched when the locale determines that the number is in the {{code "'one'"}} pluralization class</dd>
-
-    <dt>{{code "two: String|Array"}}</dt>
-    <dd>(plural) Matched when the locale determines that the number is in the {{code "'two'"}} pluralization class</dd>
-
-    <dt>{{code "few: String|Array"}}</dt>
-    <dd>(plural) Matched when the locale determines that the number is in the {{code "'few'"}} pluralization class</dd>
-
-    <dt>{{code "many: String|Array"}}</dt>
-    <dd>(plural) Matched when the locale determines that the number is in the {{code "'many'"}} pluralization class</dd>
-
-    <dt>{{code "male: String|Array"}}</dt>
-    <dd>(plural) Matched when the {{code "valueName"}} returns {{code "'male'"}}</dd>
-
-    <dt>{{code "female: String|Array"}}</dt>
-    <dd>(plural) Matched when the {{code "valueName"}} returns {{code "'female'"}}</dd>
-
-    <dt>{{code "neuter: String|Array"}}</dt>
-    <dd>(plural) Matched when the {{code "valueName"}} returns {{code "'neuter'"}}</dd>
-
-    <dt>{{code "other: String|Array"}}</dt>
-    <dd>(plural or select) Matched when {{code "_normalizeCount"}} returns {{code "'other'"}}, the {{code "valueName"}} returns {{code "'other'"}} or the returned value from either of those returns a value that is not specified. For instance, if {{code "'male'"}} is returned and {{code "'male'"}} is not specified, other will be matched.</dd>
-
-</dl>
-
-<p>
-    When {{code "options"}} is matched and returns an {{code "Array"}}, that {{code "Array"}} is then processed in the same manner. This means, large complex, conditional messages can be formed by defining the pattern as such.
-</p>
 
 
 {{sectionHeading "Locale Data"}}
